@@ -15,7 +15,6 @@ struct Diamond: Shape {
         let bottom = CGPoint(x: rect.maxX/2, y: rect.minY)
         let left = CGPoint(x: rect.minX, y: rect.maxY/2)
         
-        
         var p = Path()
         p.move(to: top)
         p.addLine(to: right)

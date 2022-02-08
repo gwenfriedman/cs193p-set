@@ -12,7 +12,7 @@ import SwiftUI
 class SetGameViewModel : ObservableObject {
     
     private static func createSetGame(theme: Theme) -> SetGame<String> {
-        SetGame<String>()
+        SetGame<String>(numbers: theme.numbers, colors: theme.colors, shapeTypes: theme.shapes, shadings: theme.shadings)
     }
     
     typealias Card = SetGame<String>.Card
@@ -26,18 +26,26 @@ class SetGameViewModel : ObservableObject {
             theme = SetGameViewModel.themes[0]
             model = SetGameViewModel.createSetGame(theme: theme)
         }
-        
+       
     static var themes: [Theme] = [
-        Theme(name: "classic", shapes: ["rectangle", "circle", "diamond"], colors: ["red", "blue", "green"])
+        Theme(name: "classic", shapes: ["rectangle", "oval", "diamond"], colors: ["red", "purple", "green"], numbers: [1, 2, 3], shadings: ["fill", "stripped", "outlined"])
     ]
     
     var cards: Array<Card> {
         return model.cards
     }
     
+    var dealtCards: Array<Card> {
+        return model.dealtCards
+    }
+    
     func newGame() -> Void {
         theme = SetGameViewModel.themes[0]
         model = SetGameViewModel.createSetGame(theme: theme)
+    }
+    
+    func dealCards() -> Void {
+        model.dealCards()
     }
     
     var themeName: String {
@@ -50,6 +58,4 @@ class SetGameViewModel : ObservableObject {
     func choose(_ card: Card) {
         model.choose(card)
     }
-    
-    
 }

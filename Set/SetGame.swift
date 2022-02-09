@@ -16,9 +16,6 @@ struct SetGame<CardContent> where CardContent: Equatable  {
     
     private(set) var potentialMatchingCards: Array<Card> = []
     
-    private(set) var hasMatch: Bool = false
-    
-    
     mutating func choose(_ card: Card) {
          
         
@@ -109,6 +106,8 @@ struct SetGame<CardContent> where CardContent: Equatable  {
             features[c.shading, default: 0] += 1
             features[c.shape, default: 0] += 1
         }
+        
+        //TODO: something is causing bugs! sometimes the cards values are not what they look like
         return features.filter { $0.value == 2}.isEmpty ? true : false
         
     }

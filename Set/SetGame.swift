@@ -14,25 +14,55 @@ struct SetGame<CardContent> where CardContent: Equatable  {
     private(set) var cards: Array<Card>
     private(set) var dealtCards: Array<Card> = []
     
+    private(set) var potentialMatchingCards: Array<Card> = []
+    
+    private(set) var hasMatch: Bool = false
+    
     
     
     mutating func choose(_ card: Card) {
          
         
+        //TODO: check case when no cards left
         if let chosenIndex = dealtCards.firstIndex(where: {$0.id == card.id}) {
+            dealtCards[chosenIndex].isSelected = true
             
             let selectedCards = dealtCards.filter { $0.isSelected }
-            
-            
+            print("selected cards!", selectedCards)
+                                                
             if selectedCards.count == 3 {
+                hasMatch = checkSet(selectedCards)
+                potentialMatchingCards = selectedCards
                 
-                let isSet = checkSet(selectedCards)
                 
-                //if is match, replace cards at index
-                if isSet {
+                if hasMatch {
+                    //Is set and is match
                     for c in selectedCards {
                             dealtCards.indices.forEach({
                                 if dealtCards[$0] == c {
+                                    dealtCards[$0].isMatched = Match.match
+                                }
+                            })
+                    }
+                } else {
+                    //is not set and is not match
+                    for c in selectedCards {
+                        dealtCards.indices.forEach({
+                            if dealtCards[$0] == c {
+                                dealtCards[$0].isMatched = Match.notMatch
+                            }
+                        })
+                    }
+                }
+            }
+            
+            if selectedCards.count == 4 {
+                //if is match, replace cards at index
+                if hasMatch {
+                    //already has set and selects another card
+                    for c in potentialMatchingCards {
+                            dealtCards.indices.forEach({
+                                if dealtCards[$0].id == c.id {
                                     dealtCards.remove(at: $0)
                                     dealtCards.insert(cards.first!, at: $0)
                                     cards.removeFirst()
@@ -40,38 +70,27 @@ struct SetGame<CardContent> where CardContent: Equatable  {
                             })
                         
                     }
-                    dealtCards[chosenIndex].isSelected = true
+                    
+                    potentialMatchingCards = []
+                    
                     
                 } else {
-                    for c in selectedCards {
+                    //is not set, deselect and change match to none
+                    for c in potentialMatchingCards {
                             dealtCards.indices.forEach({
-                                if dealtCards[$0] == c {
+                                if dealtCards[$0].id == c.id {
                                     dealtCards[$0].isSelected = false
+                                    dealtCards[$0].isMatched = Match.none
                                 }
                             })
                         
                     }
-                    dealtCards[chosenIndex].isSelected = true
+                    
+                    potentialMatchingCards = []
                 }
                 
-                            
-                //what to do if there are no cards left?
-                
-                //if not a match - deselect all? - need to tell user!
-                
-                
-                //TODO: deselect
-                
             } else if card.isSelected {
-                //TODO: this doesn't work! doesn't update the view
-                print(card, dealtCards[chosenIndex])
                 dealtCards[chosenIndex].isSelected = false
-                print(card, dealtCards[chosenIndex])
-            
-            } else {
-            
-                dealtCards[chosenIndex].isSelected = true
-                
             }
         }
     }
@@ -81,18 +100,12 @@ struct SetGame<CardContent> where CardContent: Equatable  {
                 
         var features = [AnyHashable:Int]()
         for c in cards {
-            features[c.number, default: 0] += 1
+            features[c.numberofShapes, default: 0] += 1
             features[c.color, default: 0] += 1
             features[c.shading, default: 0] += 1
             features[c.shape, default: 0] += 1
         }
-                
-//        if isMatch {
-//            for index in cards {
-//                dealtCards[index].isMatched = true
-//            }
-//        }
-
+        print(features.filter { $0.value == 2}.isEmpty ? true : false, features, cards)
         return features.filter { $0.value == 2}.isEmpty ? true : false
         
     }
@@ -106,14 +119,14 @@ struct SetGame<CardContent> where CardContent: Equatable  {
         }
     }
     
-    init(numbers: [Int], colors: [String], shapeTypes: [String], shadings: [String]) {
+    init(numberofShapes: [Int], colors: [String], shapeTypes: [String], shadings: [String]) {
         cards = []
         
-        for number in numbers {
+        for number in numberofShapes {
             for color in colors {
                 for shape in shapeTypes {
                     for shading in shadings {
-                        cards.append(Card(color: color, shape: shape, number: number, shading: shading))
+                        cards.append(Card(color: color, shape: shape, numberofShapes: number, shading: shading, isMatched: Match.none))
                     }
                 }
             }
@@ -122,20 +135,28 @@ struct SetGame<CardContent> where CardContent: Equatable  {
         cards.shuffle()
         
         dealtCards.append(contentsOf: cards[0...11])
+        print("dealtCards", dealtCards)
         
         cards.removeSubrange(0...11)
     }
     
     
     struct Card: Identifiable, Equatable, Hashable {
+        
         let color: String
         let shape: String
-        let number: Int
+        let numberofShapes: Int
         let shading: String
         var isSelected = false
-//        var isMatched = false
+        var isMatched: Match = Match.none
         
         let id = UUID()
+    }
+    
+    enum Match: String, Hashable {
+        case match
+        case notMatch
+        case none
     }
     
 }

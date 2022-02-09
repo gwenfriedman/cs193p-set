@@ -12,7 +12,7 @@ import SwiftUI
 class SetGameViewModel : ObservableObject {
     
     private static func createSetGame(theme: Theme) -> SetGame<String> {
-        SetGame<String>(numbers: theme.numbers, colors: theme.colors, shapeTypes: theme.shapes, shadings: theme.shadings)
+        SetGame<String>(numberofShapes: theme.numbers, colors: theme.colors, shapeTypes: theme.shapes, shadings: theme.shadings)
     }
     
     typealias Card = SetGame<String>.Card

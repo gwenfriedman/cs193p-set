@@ -22,17 +22,16 @@ struct SetGameView: View {
             })
             
             HStack {
-                Button {
-                    game.newGame()
-                } label: {
-                    Text("New Game")
-                }
+                Spacer()
+
+                Button("New game", action: game.newGame)
                 
-                Button {
-                    game.dealCards()
-                } label: {
-                    Text("Deal 3 Cards")
-                }
+                Spacer()
+                Button("Deal 3 cards", action: game.dealCards)
+                    .disabled(game.cards.count < 3)
+                
+                Spacer()
+
             }
         }
     }
@@ -104,20 +103,32 @@ struct CardView: View {
         card.isSelected ? Color.yellow : Color.black
     }
     
+    var cardBackgroundColor: Color {
+        switch card.isMatched {
+            case .notMatch:
+                return Color.black
+            
+            case .match:
+                return Color.yellow
+            
+            case .none:
+                return Color.white
+            
+        }
+    }
+    
     var body: some View {
         
         GeometryReader(content: { geometry in
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
-                
-                //TODO: add changes for if selected
-                                
-                    shape.fill().foregroundColor(.white)
+                                                
+                    shape.fill().foregroundColor(cardBackgroundColor)
                     shape.strokeBorder(outlineColor, lineWidth: DrawingConstants.lineWidth)
 
                 VStack {
-                    ForEach(0..<card.number) { _ in
-                            self.symbol
+                    ForEach(0..<card.numberofShapes) { _ in
+                            symbol
                         }
                     }
                 .padding(8)

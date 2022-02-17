@@ -41,7 +41,6 @@ struct SetGame<CardContent> where CardContent: Equatable  {
             //When there are 3 cards selected
             if selectedCards.count == 3 {
                 potentialMatchingCards = selectedCards
-                print("potentialMatchingCards", potentialMatchingCards)
                 let isSet = checkSet(potentialMatchingCards)
                 
                 //Turn yellow if match
@@ -170,6 +169,12 @@ struct SetGame<CardContent> where CardContent: Equatable  {
         potentialMatchingCards = []
     }
     
+    public enum Match: String, Hashable {
+        case match
+        case notMatch
+        case none
+    }
+    
     
     struct Card: Identifiable, Equatable, Hashable {
         
@@ -181,12 +186,6 @@ struct SetGame<CardContent> where CardContent: Equatable  {
         var isMatched: Match = Match.none
         
         let id: Int
-    }
-    
-    enum Match: String, Hashable {
-        case match
-        case notMatch
-        case none
     }
     
 }

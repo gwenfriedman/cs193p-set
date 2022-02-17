@@ -70,10 +70,10 @@ struct SetGameView: View {
                 .matchedGeometryEffect(id: card.id, in: dealingNamespace)
                 .padding(4)
                 .transition(AnyTransition.asymmetric(insertion: .identity, removal: .scale))
-//                .zIndex(1)
+                .rotationEffect(Angle.degrees(card.isMatched == .match ? 360 : 0))
+                //TODO: add animation for mismatch
                 .onTapGesture {
                     //Intent to choose a card
-                    print("choose")
                     withAnimation {
                         game.choose(card)
                     }
@@ -86,12 +86,14 @@ struct SetGameView: View {
     var deckBody: some View {
         ZStack {
             
-            //TODO: for some reason this is adding an extra card at each spot
+            //TODO: is this filtering wrong?
             ForEach(game.cards.filter(isUndealt)) { card in
                 CardView(card, isFaceUp: false)
+                    
+                    //TODO: for some reason this is adding an extra card at each spot
 //                    .matchedGeometryEffect(id: card.id, in: dealingNamespace)
-                    .transition(AnyTransition.asymmetric(insertion: .opacity, removal: .identity))
-//                    .zIndex(0.01)
+                    
+//                    .transition(AnyTransition.asymmetric(insertion: .opacity, removal: .identity))
             }
         }
         .frame(width: CardConstants.undealtWidth, height: CardConstants.undealtHeight)
@@ -136,9 +138,6 @@ struct SetGameView: View {
     }
 }
 
-
-
-//TODO: add cardify?
 
 struct CardView: View {
     private let card: SetGameViewModel.Card
@@ -206,7 +205,6 @@ struct CardView: View {
         card.isSelected ? Color.yellow : Color.black
     }
     
-    //TODO: animate matches and not matches
     var cardBackgroundColor: Color {
         switch card.isMatched {
             case .notMatch:
